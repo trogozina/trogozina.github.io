@@ -1,0 +1,538 @@
+/* Tatiana Rogozina — portfolio
+   Same visual system as the CV (cv-builder): geometric sans (Jost, the free web
+   counterpart of Futura), light capitals for names and page titles, a red accent
+   for section labels and thin red rules above sections, grey for dates and labels.
+   Fonts are self-hosted (no requests to Google). */
+
+/* ---------- Fonts ---------- */
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/jost-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/jost-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Jost";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/jost-latin-wght-italic.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Jost";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/jost-latin-ext-wght-italic.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ---------- Tokens (colours taken from the CV) ---------- */
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #505050;        /* CV grey: dates, labels, organisations */
+  --accent: #a6242b;       /* CV red text: section labels, role */
+  --rule: #d3242a;         /* CV red rules above sections */
+  --line: #d4d0c8;         /* thin neutral separators */
+  --soft: #efece6;
+  --sans: "Jost", "Futura", "Century Gothic", "Avenir Next", system-ui, sans-serif;
+  --gutter: clamp(20px, 4.5vw, 64px);
+  --max: 1320px;
+  --text-max: 66ch;
+  --label-col: minmax(150px, 3fr);
+  --body-col: minmax(0, 9fr);
+  --col-gap: clamp(20px, 4vw, 64px);
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+/* Background images (all barely visible, plain white everywhere else):
+   - .masthead: header + page title on a faint facade drawing; it scrolls away
+     together with the title.
+   - .side-img: a faint picture filling only the left (label) column of a
+     section, from its red rule down to the next one. The text column stays white.
+   Tune the two opacity values to make them stronger or weaker. */
+:root { --hero-img-opacity: .14; --side-img-opacity: .16; }
+
+/* .masthead (header + page title): the facade drawing from the top of the page
+   down to 3mm above the first red rule (hidden with .no-bg). */
+.masthead { position: relative; isolation: isolate; }
+.masthead::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 3mm 0;
+  z-index: -1;
+  background: url("../img/hero-facade.jpg") center bottom / cover no-repeat;
+  opacity: var(--hero-img-opacity);
+  pointer-events: none;
+}
+
+
+.side-img { position: relative; isolation: isolate; }
+.side-img::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  /* 3mm gap to the red rules above and below, so neighbouring pictures don't touch */
+  top: 3mm;
+  bottom: 3mm;
+  /* from the screen edge (at most 160px past the text margin) ... */
+  left: max(calc(50% - 50vw), -160px);
+  /* ... to 2mm before the text column */
+  right: calc(100% - (100% - var(--col-gap)) * .25 - var(--col-gap) + 2mm);
+  background: var(--side-img) var(--side-pos, center) / cover no-repeat;
+  opacity: var(--side-img-opacity);
+  pointer-events: none;
+}
+.img-roads   { --side-img: url("../img/sec-roads.jpg");   --side-pos: 50% 40%; }
+.img-chimney { --side-img: url("../img/sec-chimney.jpg"); --side-pos: 50% 20%; }
+.img-model   { --side-img: url("../img/sw-model.jpg");    --side-pos: 40% 50%; }
+.img-render  { --side-img: url("../img/sw-render.jpg");   --side-pos: 45% 60%; }
+.img-plan    { --side-img: url("../img/sw-plan.jpg");     --side-pos: 50% 15%; }
+.img-site    { --side-img: url("../img/sw-site.jpg");     --side-pos: 50% 35%; }
+.img-section { --side-img: url("../img/sw-section.jpg");  --side-pos: 70% 60%; }
+/* Software page: Modelling & BIM (axonometric section, always shown whole,
+   a little below centre), Visualisation, Graphics & layout, GIS & analysis. */
+.img-sec2   { --side-img: url("../img/sw-sec2.jpg");   --side-pos: 50% 75%; }
+.side-img.img-sec2::before { background-size: contain; }  /* always whole */
+.img-2402   { --side-img: url("../img/sw-2402.jpg");   --side-pos: 50% 50%; }
+.img-pic25  { --side-img: url("../img/sw-pic25.jpg");  --side-pos: 60% 50%; }
+.img-loggia { --side-img: url("../img/sw-loggia.jpg"); --side-pos: 40% 50%; }
+/* Graphics & layout: section 19_05, fitted to the column height, sides cropped */
+.img-s19    { --side-img: url("../img/sw-s19.jpg");    --side-pos: 30% 50%; }
+.side-img.img-s19::before { background-size: auto 100%; }
+.img-duisburg { --side-img: url("../img/sw-duisburg.jpg"); --side-pos: 20% 50%; }
+/* GIS & analysis: big black-and-white map with railways (Berlin) */
+.img-railways { --side-img: url("../img/sw-railways.jpg"); --side-pos: 25% 57%; }  /* rail cross in the middle */
+.side-img.img-railways::before { background-size: 200% auto; }  /* 2x the column width, cropped */
+/* Experience page: one picture per section in the date column (Experience,
+   Education, Awards), each filling its section and centred. The class in
+   experience.html picks the picture. */
+.img-roof { --side-img: url("../img/exp-roof.jpg"); --side-pos: 58% 0; }
+/* Pictures available: img-roof (roof plan), img-redroads (station model with
+   red roads), img-render25 (facade render), img-model3d (chimney). */
+.img-render25 { --side-img: url("../img/exp-render.jpg"); --side-pos: 50% 0; }
+/* shown 1.5x smaller than the column height, from the top; empty below */
+.side-img.img-render25::before { background-size: auto calc(100% / 1.5); }
+.img-model3d  { --side-img: url("../img/exp-model.jpg");  --side-pos: 50% 0; }
+.img-redroads { --side-img: url("../img/exp-redroads.jpg"); --side-pos: 100% 50%; }
+/* wider than the column and aligned right, so the column stays filled to the
+   text: each extra 2cm of width moves the drawing 1cm further left */
+.side-img.img-redroads::before { background-size: calc(100% + 80px + 2cm) auto; }
+.img-plan2    { --side-img: url("../img/exp-plan2.jpg");    --side-pos: 50% 50%; }
+/* Awards: long street facade (fasade.pdf). 341% of the column width shows
+   about 30% of the street (the central group); white field above it. */
+.img-facade-ex { --side-img: url("../img/exp-fasade.jpg"); --side-pos: 45% 75%; }
+.side-img.img-facade-ex::before { background-size: 341% auto; }
+.side-img.img-plan2::before { background-size: calc(100% - 20mm) auto; }  /* column width minus 10mm on each side; top and bottom cropped */
+.masthead.no-bg::before { display: none; }
+/* home page picture behind the name (class on .masthead in index.html):
+   hero-exhibition (facade with exhibition boxes) or hero-2402 (render).
+   Both sit with their bottom edge at the red rule. */
+.masthead.hero-2402::before { background-image: url("../img/hero-2402.jpg"); background-position: 50% 100%; }  /* bottom edge at the red rule */
+.masthead.hero-exhibition::before { background-image: url("../img/hero-exhibition.jpg"); background-position: 50% 100%; }
+@media (max-width: 900px) { .side-img::before { display: none; } }
+@media print { .masthead::before, .side-img::before { display: none; } }
+
+img { max-width: 100%; display: block; }
+h1, h2, h3 { margin: 0; font-weight: 400; }
+p { margin: 0 0 1em; }
+strong, b { font-weight: 600; }
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--line);
+  transition: color .15s ease, text-decoration-color .15s ease;
+}
+a:hover { text-decoration-color: var(--accent); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+a.ext::after { content: "\2009\2197"; font-size: .85em; }
+
+/* icon + text link (same icons as in the CV header) */
+.ico-link { display: inline-flex; align-items: center; gap: .45em; }
+.ico-link svg { width: .9em; height: .9em; flex: none; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--text); color: var(--bg); padding: 8px 14px; z-index: 10;
+}
+.skip:focus { left: var(--gutter); top: 12px; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* small grey label (meta, form fields) */
+.label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* red section label, like PROFILE / EXPERIENCE in the CV */
+.kicker, .cv-section > h2, .skill-group h2, .split aside h2 {
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px var(--gutter);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+.brand {
+  font-size: 21px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.brand-note { margin-left: 16px; color: var(--accent); letter-spacing: .08em; }
+.site-nav ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 6px 30px;
+}
+.site-nav a {
+  font-size: 15px;
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+}
+.site-nav a:hover { border-bottom-color: var(--line); }
+.site-nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--rule); }
+
+/* ---------- Page heads ---------- */
+.page-head { padding-top: clamp(56px, 9vw, 128px); padding-bottom: clamp(36px, 4.5vw, 64px); }
+.page-head h1 {
+  font-size: clamp(40px, 6.4vw, 92px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.page-head .lead { margin-top: 24px; max-width: 46ch; color: var(--muted); font-size: 18px; }
+
+/* ---------- Home ---------- */
+/* The name block (.home, inside the masthead) ends exactly at the red rule of
+   .hero-meta, which sits right below the masthead in .home-meta. */
+.home { padding-top: clamp(72px, 12vw, 180px); padding-bottom: clamp(40px, 5.5vw, 72px); }
+.home-meta { padding-bottom: clamp(24px, 3vw, 40px); }
+/* Home first screen: the name zone grows to fill the window, so the red rule
+   and the Based in / Now / Looking for row sit at the bottom of the screen. */
+.hero-screen { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+.hero-screen .masthead { flex: 1; display: flex; flex-direction: column; }
+.hero-screen .site-header, .hero-screen .home-meta { width: 100%; }
+.hero-screen .home {
+  flex: 1; width: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: clamp(40px, 6vw, 96px);
+}
+.home-meta .hero-meta { margin-top: 0; }
+.home-name {
+  font-size: clamp(40px, 7.6vw, 112px);
+  font-weight: 300;
+  line-height: .95;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.home-role {
+  margin: clamp(14px, 1.6vw, 24px) 0 0;
+  font-size: clamp(15px, 1.4vw, 20px);
+  font-weight: 400;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hero-meta {
+  margin-top: clamp(40px, 5.5vw, 72px);
+  padding-top: 22px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.hero-meta p { margin: 6px 0 0; font-size: 17px; }
+
+.home-index { padding-bottom: clamp(64px, 9vw, 128px); }
+.home-index a {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 6fr) minmax(0, 5fr) 24px;
+  align-items: baseline;
+  gap: 20px;
+  padding: clamp(18px, 2.2vw, 28px) 0;
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+}
+.home-index a:last-child { border-bottom: 1px solid var(--line); }
+.home-index .n { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.home-index .t {
+  font-size: clamp(24px, 2.8vw, 38px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: color .15s ease;
+}
+.home-index .d { font-size: 16px; color: var(--muted); }
+.home-index .arr { text-align: right; color: var(--muted); transition: transform .2s ease, color .15s ease; }
+.home-index a:hover .t, .home-index a:hover .arr { color: var(--accent); }
+.home-index a:hover .arr { transform: translateX(4px); }
+
+/* image placeholder until real images arrive */
+.ph { position: relative; background: var(--soft); overflow: hidden; }
+.ph::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top right, transparent calc(50% - .5px), var(--line) 50%, transparent calc(50% + .5px)),
+    linear-gradient(to top left, transparent calc(50% - .5px), var(--line) 50%, transparent calc(50% + .5px));
+  opacity: .7;
+}
+.ph span {
+  position: absolute; left: 16px; bottom: 14px;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- Text pages ---------- */
+.split {
+  display: grid;
+  grid-template-columns: var(--label-col) var(--body-col);
+  gap: clamp(24px, 4vw, 64px) var(--col-gap);
+  padding: clamp(28px, 4vw, 48px) 0 clamp(40px, 6vw, 88px);
+  border-top: 1px solid var(--rule);
+}
+.split aside { position: relative; }
+.prose { max-width: var(--text-max); font-size: 17px; }
+.prose .intro {
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 300;
+  line-height: 1.4;
+  margin-bottom: 1.2em;
+}
+.prose .intro em { font-style: normal; color: var(--accent); }
+.portrait { width: 100%; max-width: 320px; height: auto; }
+
+.facts { list-style: none; margin: 0; padding: 0; }
+.facts li {
+  display: grid;
+  grid-template-columns: minmax(110px, 2fr) minmax(0, 7fr);
+  gap: 4px 24px;
+  padding: 10px 0;
+  font-size: 17px;
+}
+.facts .label { padding-top: 3px; }
+
+/* ---------- CV (experience & education) ---------- */
+.cv-section {
+  padding: clamp(20px, 2.4vw, 28px) 0 clamp(36px, 5vw, 64px);
+  border-top: 1px solid var(--rule);
+}
+.cv-section > h2 { margin-bottom: clamp(20px, 2.6vw, 32px); }
+.cv-row {
+  display: grid;
+  grid-template-columns: var(--label-col) var(--body-col);
+  gap: 6px var(--col-gap);
+  padding: 0 0 clamp(26px, 3vw, 36px);
+}
+.cv-row:last-child { padding-bottom: 0; }
+.cv-date {
+  font-size: 18px;
+  letter-spacing: .005em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.cv-role { font-size: 18px; font-weight: 600; line-height: 1.35; }
+.cv-role .note { font-weight: 400; color: var(--muted); }
+.cv-org { margin-top: 2px; color: var(--muted); font-size: 17px; }
+.cv-org a { color: inherit; }
+.cv-body { max-width: var(--text-max); }
+.cv-body p { margin: 12px 0 0; font-size: 17px; }
+.cv-body ul { margin: 14px 0 0; padding: 0; list-style: none; }
+.cv-body li { position: relative; padding-left: 20px; font-size: 17px; margin: 4px 0; }
+.cv-body li::before { content: "–"; position: absolute; left: 0; color: var(--muted); }
+.cv-body em { font-style: italic; }
+
+/* ---------- Software ---------- */
+.skills-legend { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 28px; font-size: 14px; color: var(--muted); }
+.skills-legend span { display: inline-flex; align-items: center; gap: 10px; }
+.skill-group {
+  padding: clamp(20px, 2.4vw, 28px) 0 clamp(32px, 4.5vw, 56px);
+  border-top: 1px solid var(--rule);
+}
+.skill-group-inner {
+  display: grid;
+  grid-template-columns: var(--label-col) var(--body-col);
+  gap: 20px var(--col-gap);
+}
+.skill-list { list-style: none; margin: 0; padding: 0; max-width: 760px; }
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 110px;
+  align-items: center;
+  gap: 20px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 17px;
+}
+.skill:first-child { padding-top: 0; }
+.skill .lvl-word { font-size: 15px; color: var(--muted); text-align: right; }
+.lvl { display: inline-flex; gap: 5px; }
+.lvl i { width: 26px; height: 3px; background: var(--line); display: block; }
+.lvl[data-level="1"] i:nth-child(-n+1),
+.lvl[data-level="2"] i:nth-child(-n+2),
+.lvl[data-level="3"] i:nth-child(-n+3) { background: var(--text); }
+
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; max-width: 760px; }
+.tags li { border: 1px solid var(--line); padding: 6px 14px; font-size: 15px; }
+
+/* ---------- Contact ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(32px, 6vw, 96px);
+  padding: clamp(28px, 4vw, 48px) 0 clamp(64px, 8vw, 120px);
+  border-top: 1px solid var(--rule);
+}
+.channels { list-style: none; margin: 32px 0 0; padding: 0; }
+.channels li { padding: 14px 0; border-top: 1px solid var(--line); }
+.channels li:last-child { border-bottom: 1px solid var(--line); }
+.channels .label { display: block; margin-bottom: 2px; }
+.channels a, .channels span.v { font-size: 18px; }
+
+.form { display: grid; gap: 28px; }
+.field label { display: block; }
+.label-note { text-transform: none; letter-spacing: 0; }
+.field input, .field textarea {
+  width: 100%;
+  margin-top: 6px;
+  border: 0;
+  border-bottom: 1px solid var(--text);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 18px;
+  padding: 10px 0;
+}
+.field textarea { resize: vertical; min-height: 160px; line-height: 1.5; }
+.field input:focus, .field textarea:focus { outline: none; border-bottom: 2px solid var(--accent); padding-bottom: 9px; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.consent { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; color: var(--muted); }
+.consent input { margin-top: 4px; width: 16px; height: 16px; accent-color: var(--accent); }
+.hp { position: absolute !important; left: -9999px !important; }
+.btn {
+  justify-self: start;
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 15px 34px;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.btn:hover { background: var(--accent); border-color: var(--accent); }
+.btn[disabled] { opacity: .5; cursor: progress; }
+.form-status { min-height: 1.6em; font-size: 16px; }
+.form-status.ok { color: #1f5f3a; }
+.form-status.err { color: var(--accent); }
+
+/* ---------- Legal pages ---------- */
+.legal {
+  padding: clamp(20px, 2.4vw, 28px) 0 clamp(64px, 8vw, 120px);
+  border-top: 1px solid var(--rule);
+}
+.legal h2 {
+  font-size: 17px; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
+  margin: 36px 0 8px;
+}
+.legal h2:first-child { margin-top: 0; }
+.legal p, .legal li { max-width: var(--text-max); font-size: 17px; }
+.todo { background: #fff3b0; padding: 0 4px; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px var(--gutter) 40px;
+  /* divider limited to the content width, like the other lines */
+  background: linear-gradient(var(--line), var(--line)) center top / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px;
+  font-size: 14px; color: var(--muted);
+}
+.site-footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.site-footer a { text-decoration: none; }
+.site-footer a:hover { color: var(--accent); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .hero-meta { grid-template-columns: 1fr 1fr; }
+  .split, .skill-group-inner, .contact-grid { grid-template-columns: 1fr; }
+  .portrait { max-width: 260px; }
+}
+@media (max-width: 720px) {
+  body { font-size: 16px; }
+  .site-header { flex-direction: column; align-items: flex-start; gap: 14px; padding-top: 20px; padding-bottom: 18px; }
+  .brand { font-size: 19px; }
+  .brand-note { display: none; }
+  .site-nav ul { gap: 4px 18px; }
+  .home-index a { grid-template-columns: 32px minmax(0, 1fr) 20px; gap: 4px 12px; }
+  .home-index .d { grid-column: 2; grid-row: 2; }
+  .home-index .arr { grid-column: 3; grid-row: 1; }
+  .hero-meta { grid-template-columns: 1fr; gap: 16px; }
+  .cv-row { grid-template-columns: 1fr; gap: 2px; }
+  .cv-date { font-size: 16px; }
+  .facts li { grid-template-columns: 1fr; gap: 0; }
+  .skill { grid-template-columns: minmax(0, 1fr) auto 80px; gap: 12px; font-size: 16px; }
+  .skill .lvl i { width: 18px; }
+  .row-2 { grid-template-columns: 1fr; }
+  .btn { justify-self: stretch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
